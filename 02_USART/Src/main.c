@@ -120,13 +120,13 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    if(!HAL_GPIO_ReadPin(GPIOE, KEY1_Pin))
+    if(!HAL_GPIO_ReadPin(KEY1_GPIO_Port, KEY1_Pin))
     {
       HAL_Delay(20);  // Key debounce
-      if(HAL_GPIO_ReadPin(GPIOE, KEY1_Pin))
+      if(HAL_GPIO_ReadPin(KEY1_GPIO_Port, KEY1_Pin))
       {
-	HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_6);
-	UartSendDemoStrings("test");  // only <=12 bytes can be received from PC side, Don't know WHY!!!
+        HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
+        UartSendDemoStrings("test");  // only <=12 bytes can be received from PC side, Don't know WHY!!!
       }
     }
   }

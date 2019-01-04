@@ -111,8 +111,13 @@ int main(void)
   MX_GPIO_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
+  
+  /* Prepare to receive data and store data to rx_buff */
+  /* When 10 bytes are received Rx Interrupt will be triggered */
+  
+  /* **In function UART_Receive_IT() RXNEIE in USART_CR1 is DISABLED.** */
+  /* **In function HAL_UART_RxCpltCallback() RXNEIE in USART_CR1 need to be ENABLED.** */
   HAL_UART_Receive_IT(&huart1, rx_buff, 10);  // my code
-  HAL_UART_Transmit_IT(&huart1, tx_buff, 10);  // my code
 
   /* USER CODE END 2 */
 
@@ -123,6 +128,15 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+    /* Send 10 bytes from tx_buff if KEY1 is pressed */
+    if(!HAL_GPIO_ReadPin(KEY1_GPIO_Port, KEY1_Pin))
+    {
+      HAL_Delay(20);  // Key debounce
+      if(HAL_GPIO_ReadPin(KEY1_GPIO_Port, KEY1_Pin))
+      {
+        HAL_UART_Transmit_IT(&huart1, tx_buff, 10);  // my code
+      }
+    }
   }
   /* USER CODE END 3 */
 }
@@ -167,12 +181,16 @@ void SystemClock_Config(void)
 /* USER CODE BEGIN 4 */
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)  // my code
 {
-  __NOP();  // like "pass" in python
+//  __NOP();  // like "pass" in python
+  HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)  // my code
 {
-  __NOP();  // like "pass" in python
+//  __NOP();  // like "pass" in python
+  /* *RXNEIE in USART_CR1 is ENABLED again.* */
+  HAL_UART_Receive_IT(&huart1, rx_buff, 10);  // my code
+  HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
 }
 /* USER CODE END 4 */
 
