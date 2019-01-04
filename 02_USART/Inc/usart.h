@@ -10,7 +10,7 @@
   * inserted by the user or by software development tools
   * are owned by their respective copyright owners.
   *
-  * COPYRIGHT(c) 2018 STMicroelectronics
+  * COPYRIGHT(c) 2019 STMicroelectronics
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -47,8 +47,8 @@
 #include "main.h"
 
 /* USER CODE BEGIN Includes */
-void UartSendStrings(void * argument);
-void UartReceiveStrings(void *argument);
+void UartSendDemoStrings(void * argument);
+void UartReceiveDemoStrings(void *argument);
 void debugPrint(UART_HandleTypeDef *huart, char _out[]);
 
 /* USER CODE END Includes */

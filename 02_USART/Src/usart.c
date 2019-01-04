@@ -10,7 +10,7 @@
   * inserted by the user or by software development tools
   * are owned by their respective copyright owners.
   *
-  * COPYRIGHT(c) 2018 STMicroelectronics
+  * COPYRIGHT(c) 2019 STMicroelectronics
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -39,47 +39,47 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "usart.h"
-#include <string.h>
 
 /* USER CODE BEGIN 0 */
+#include <string.h>
+
 /* Ref:
  * https://simonmartin.ch/resources/stm32/dl/STM32%20Tutorial%2003%20-%20UART%20Communication%20using%20HAL%20(and%20FreeRTOS).pdf*/
+
 /* print a string followed*/
 void debugPrint(UART_HandleTypeDef *huart, char _out[])
 {
-	HAL_UART_Transmit(huart, (uint8_t *) _out, strlen(_out), 10);
+  HAL_UART_Transmit(huart, (uint8_t *) _out, strlen(_out), 10);
 }
 
 /* print a string followed by a 0x0A 0x0D*/
 void debugPrintln(UART_HandleTypeDef *huart, char _out[])
 {
-	HAL_UART_Transmit(huart, (uint8_t *) _out, strlen(_out), 10);
-	char newline[2] = "\r\n";
-	HAL_UART_Transmit(huart, (uint8_t *) newline, 2, 10);
+  HAL_UART_Transmit(huart, (uint8_t *) _out, strlen(_out), 10);
+  char newline[2] = "\r\n";
+  HAL_UART_Transmit(huart, (uint8_t *) newline, 2, 10);
 }
 
-void UartSendStrings(void *argument)
+void UartSendDemoStrings(void *argument)
 {
-	debugPrint(&huart1, argument); // print
-	debugPrint(&huart1, "\r\n"); // manual new line
+  debugPrint(&huart1, argument); // print
+  debugPrint(&huart1, "\r\n"); // manual new line
 
-	debugPrint(&huart1, "Hello!"); // print
-	debugPrint(&huart1, "\r\n"); // manual new line
+  debugPrint(&huart1, "Hello!"); // print
+  debugPrint(&huart1, "\r\n"); // manual new line
 
-	debugPrintln(&huart1, "How are you???"); // print full line
+  debugPrintln(&huart1, "How are you???"); // print full line
 }
 
-void UartReceiveStrings(void *argument)
+void UartReceiveDemoStrings(void *argument)
 {
-	debugPrintln(&huart1, "type something:");
-	char in[8];
-	HAL_UART_Receive(&huart1, (uint8_t *)in, 8, 1000);
-	debugPrintln(&huart1, "\n");
-	HAL_UART_Transmit(&huart1, (uint8_t *)in, 8, 1);
-	debugPrint(&huart1, "\n\n");
+  debugPrintln(&huart1, "type something:");
+  char in[8];
+  HAL_UART_Receive(&huart1, (uint8_t *)in, 8, 1000);
+  debugPrintln(&huart1, "\n");
+  HAL_UART_Transmit(&huart1, (uint8_t *)in, 8, 1);
+  debugPrint(&huart1, "\n\n");
 }
-
-
 /* USER CODE END 0 */
 
 UART_HandleTypeDef huart1;
