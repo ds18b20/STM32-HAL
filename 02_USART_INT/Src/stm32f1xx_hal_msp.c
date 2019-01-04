@@ -1,8 +1,9 @@
+/* USER CODE BEGIN Header */
 /**
   ******************************************************************************
-  * File Name          : gpio.h
-  * Description        : This file contains all the functions prototypes for 
-  *                      the gpio  
+  * File Name          : stm32f1xx_hal_msp.c
+  * Description        : This file provides code for the MSP Initialization 
+  *                      and de-Initialization codes.
   ******************************************************************************
   ** This notice applies to any and all portions of this file
   * that are not between comment pairs USER CODE BEGIN and
@@ -36,42 +37,72 @@
   *
   ******************************************************************************
   */
-
-/* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __gpio_H
-#define __gpio_H
-#ifdef __cplusplus
- extern "C" {
-#endif
+/* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-
 /* USER CODE BEGIN Includes */
 
 /* USER CODE END Includes */
 
-/* USER CODE BEGIN Private defines */
+/* Private typedef -----------------------------------------------------------*/
+/* USER CODE BEGIN TD */
 
-/* USER CODE END Private defines */
+/* USER CODE END TD */
 
-void MX_GPIO_Init(void);
+/* Private define ------------------------------------------------------------*/
+/* USER CODE BEGIN Define */
+ 
+/* USER CODE END Define */
 
-/* USER CODE BEGIN Prototypes */
+/* Private macro -------------------------------------------------------------*/
+/* USER CODE BEGIN Macro */
 
-/* USER CODE END Prototypes */
+/* USER CODE END Macro */
 
-#ifdef __cplusplus
+/* Private variables ---------------------------------------------------------*/
+/* USER CODE BEGIN PV */
+
+/* USER CODE END PV */
+
+/* Private function prototypes -----------------------------------------------*/
+/* USER CODE BEGIN PFP */
+
+/* USER CODE END PFP */
+
+/* External functions --------------------------------------------------------*/
+/* USER CODE BEGIN ExternalFunctions */
+
+/* USER CODE END ExternalFunctions */
+
+/* USER CODE BEGIN 0 */
+
+/* USER CODE END 0 */
+/**
+  * Initializes the Global MSP.
+  */
+void HAL_MspInit(void)
+{
+  /* USER CODE BEGIN MspInit 0 */
+
+  /* USER CODE END MspInit 0 */
+
+  __HAL_RCC_AFIO_CLK_ENABLE();
+  __HAL_RCC_PWR_CLK_ENABLE();
+
+  /* System interrupt init*/
+
+  /**DISABLE: JTAG-DP Disabled and SW-DP Disabled 
+  */
+  __HAL_AFIO_REMAP_SWJ_DISABLE();
+
+  /* USER CODE BEGIN MspInit 1 */
+
+  /* USER CODE END MspInit 1 */
 }
-#endif
-#endif /*__ pinoutConfig_H */
 
-/**
-  * @}
-  */
+/* USER CODE BEGIN 1 */
 
-/**
-  * @}
-  */
+/* USER CODE END 1 */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

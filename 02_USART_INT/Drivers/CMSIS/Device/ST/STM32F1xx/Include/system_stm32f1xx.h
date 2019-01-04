@@ -1,16 +1,14 @@
 /**
   ******************************************************************************
-  * File Name          : gpio.h
-  * Description        : This file contains all the functions prototypes for 
-  *                      the gpio  
+  * @file    system_stm32f10x.h
+  * @author  MCD Application Team
+  * @version V4.2.0
+  * @date    31-March-2017
+  * @brief   CMSIS Cortex-M3 Device Peripheral Access Layer System Header File.
   ******************************************************************************
-  ** This notice applies to any and all portions of this file
-  * that are not between comment pairs USER CODE BEGIN and
-  * USER CODE END. Other portions of this file, whether 
-  * inserted by the user or by software development tools
-  * are owned by their respective copyright owners.
+  * @attention
   *
-  * COPYRIGHT(c) 2019 STMicroelectronics
+  * <h2><center>&copy; COPYRIGHT(c) 2017 STMicroelectronics</center></h2>
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -37,41 +35,82 @@
   ******************************************************************************
   */
 
-/* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __gpio_H
-#define __gpio_H
+/** @addtogroup CMSIS
+  * @{
+  */
+
+/** @addtogroup stm32f10x_system
+  * @{
+  */  
+  
+/**
+  * @brief Define to prevent recursive inclusion
+  */
+#ifndef __SYSTEM_STM32F10X_H
+#define __SYSTEM_STM32F10X_H
+
 #ifdef __cplusplus
  extern "C" {
-#endif
+#endif 
 
-/* Includes ------------------------------------------------------------------*/
-#include "main.h"
+/** @addtogroup STM32F10x_System_Includes
+  * @{
+  */
 
-/* USER CODE BEGIN Includes */
+/**
+  * @}
+  */
 
-/* USER CODE END Includes */
 
-/* USER CODE BEGIN Private defines */
+/** @addtogroup STM32F10x_System_Exported_types
+  * @{
+  */
 
-/* USER CODE END Private defines */
+extern uint32_t SystemCoreClock;          /*!< System Clock Frequency (Core Clock) */
+extern const uint8_t  AHBPrescTable[16U];  /*!< AHB prescalers table values */
+extern const uint8_t  APBPrescTable[8U];   /*!< APB prescalers table values */
 
-void MX_GPIO_Init(void);
+/**
+  * @}
+  */
 
-/* USER CODE BEGIN Prototypes */
+/** @addtogroup STM32F10x_System_Exported_Constants
+  * @{
+  */
 
-/* USER CODE END Prototypes */
+/**
+  * @}
+  */
+
+/** @addtogroup STM32F10x_System_Exported_Macros
+  * @{
+  */
+
+/**
+  * @}
+  */
+
+/** @addtogroup STM32F10x_System_Exported_Functions
+  * @{
+  */
+  
+extern void SystemInit(void);
+extern void SystemCoreClockUpdate(void);
+/**
+  * @}
+  */
 
 #ifdef __cplusplus
 }
 #endif
-#endif /*__ pinoutConfig_H */
+
+#endif /*__SYSTEM_STM32F10X_H */
 
 /**
   * @}
   */
-
+  
 /**
   * @}
-  */
-
+  */  
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

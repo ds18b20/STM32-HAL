@@ -92,7 +92,7 @@ void ReadOneFrame(void)
     c_data|=(GPIOB->IDR>>8)&0x00ff;//读低位
     FIFO_RCK_H();
     // LCD_WriteRAM(c_data);//写RGB数据到TFT GRAM
-    i = sprintf(str, "0x%x", c_data);
+    i = sprintf(str, "%x", c_data);
     HAL_UART_Transmit(&huart1, (uint8_t *)str, strlen(str), 10);
     HAL_UART_Transmit(&huart1, (uint8_t *)",", strlen(","), 10);
 
@@ -106,7 +106,7 @@ void ReadOneFrame(void)
     c_data|=(GPIOB->IDR>>8)&0x00ff;//读低位
     FIFO_RCK_H();
     // LCD_WriteRAM(c_data);//写RGB数据到TFT GRAM
-    i = sprintf(str, "0x%x", c_data);
+    i = sprintf(str, "%x", c_data);
     HAL_UART_Transmit(&huart1, (uint8_t *)str, strlen(str), 10);
     HAL_UART_Transmit(&huart1, (uint8_t *)",", strlen(","), 10);
 
@@ -120,7 +120,7 @@ void ReadOneFrame(void)
     c_data|=(GPIOB->IDR>>8)&0x00ff;//读低位
     FIFO_RCK_H();
     // LCD_WriteRAM(c_data);//写RGB数据到TFT GRAM
-    i = sprintf(str, "0x%x", c_data);
+    i = sprintf(str, "%x", c_data);
     HAL_UART_Transmit(&huart1, (uint8_t *)str, strlen(str), 10);
     HAL_UART_Transmit(&huart1, (uint8_t *)",", strlen(","), 10);
 
@@ -134,7 +134,7 @@ void ReadOneFrame(void)
     c_data|=(GPIOB->IDR>>8)&0x00ff;//读低位
     FIFO_RCK_H();
     // LCD_WriteRAM(c_data);//写RGB数据到TFT GRAM
-    i = sprintf(str, "0x%x", c_data);
+    i = sprintf(str, "%x", c_data);
     HAL_UART_Transmit(&huart1, (uint8_t *)str, strlen(str), 10);
     HAL_UART_Transmit(&huart1, (uint8_t *)",", strlen(","), 10);
 
@@ -148,7 +148,7 @@ void ReadOneFrame(void)
     c_data|=(GPIOB->IDR>>8)&0x00ff;//读低位
     FIFO_RCK_H();
     // LCD_WriteRAM(c_data);//写RGB数据到TFT GRAM
-    i = sprintf(str, "0x%x", c_data);
+    i = sprintf(str, "%x", c_data);
     HAL_UART_Transmit(&huart1, (uint8_t *)str, strlen(str), 10);
     HAL_UART_Transmit(&huart1, (uint8_t *)",", strlen(","), 10);
 
@@ -162,7 +162,7 @@ void ReadOneFrame(void)
     c_data|=(GPIOB->IDR>>8)&0x00ff;//读低位
     FIFO_RCK_H();
     // LCD_WriteRAM(c_data);//写RGB数据到TFT GRAM
-    i = sprintf(str, "0x%x", c_data);
+    i = sprintf(str, "%x", c_data);
     HAL_UART_Transmit(&huart1, (uint8_t *)str, strlen(str), 10);
     HAL_UART_Transmit(&huart1, (uint8_t *)",", strlen(","), 10);
 
@@ -176,7 +176,7 @@ void ReadOneFrame(void)
     c_data|=(GPIOB->IDR>>8)&0x00ff;//读低位
     FIFO_RCK_H();
     // LCD_WriteRAM(c_data);//写RGB数据到TFT GRAM
-    i = sprintf(str, "0x%x", c_data);
+    i = sprintf(str, "%x", c_data);
     HAL_UART_Transmit(&huart1, (uint8_t *)str, strlen(str), 10);
     HAL_UART_Transmit(&huart1, (uint8_t *)",", strlen(","), 10);
 
@@ -190,10 +190,9 @@ void ReadOneFrame(void)
     c_data|=(GPIOB->IDR>>8)&0x00ff;//读低位
     FIFO_RCK_H();
     // LCD_WriteRAM(c_data);//写RGB数据到TFT GRAM
-    i = sprintf(str, "0x%x", c_data);
+    i = sprintf(str, "%x", c_data);
     HAL_UART_Transmit(&huart1, (uint8_t *)str, strlen(str), 10);
     HAL_UART_Transmit(&huart1, (uint8_t *)",", strlen(","), 10);
-//    HAL_UART_Transmit(&huart1, (uint8_t *)"END a frame", strlen("END a frame"), 10);
   }
 }
 /* USER CODE END PFP */
@@ -277,6 +276,7 @@ int main(void)
 	  FIFO_RCK_H();
 
 	  ReadOneFrame();
+	  HAL_UART_Transmit(&huart1, (uint8_t *)"\r", strlen("\r"), 10);
 	  Vsync=0;
 	}
 

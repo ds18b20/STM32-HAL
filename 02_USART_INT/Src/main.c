@@ -10,7 +10,7 @@
   * inserted by the user or by software development tools
   * are owned by their respective copyright owners.
   *
-  * COPYRIGHT(c) 2018 STMicroelectronics
+  * COPYRIGHT(c) 2019 STMicroelectronics
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -66,7 +66,8 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+unsigned char tx_buff[] = {'0','1','2','3','4','5','6','7','8','9'};  // my code
+unsigned char rx_buff[10];  // my code
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -110,6 +111,8 @@ int main(void)
   MX_GPIO_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
+  HAL_UART_Receive_IT(&huart1, rx_buff, 10);  // my code
+  HAL_UART_Transmit_IT(&huart1, tx_buff, 10);  // my code
 
   /* USER CODE END 2 */
 
@@ -118,10 +121,8 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
+
     /* USER CODE BEGIN 3 */
-//    HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
-    HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
-    HAL_Delay(500);
   }
   /* USER CODE END 3 */
 }
@@ -164,7 +165,15 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)  // my code
+{
+  __NOP();  // like "pass" in python
+}
 
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)  // my code
+{
+  __NOP();  // like "pass" in python
+}
 /* USER CODE END 4 */
 
 /**
