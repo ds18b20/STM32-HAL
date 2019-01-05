@@ -1,12 +1,12 @@
 #include "delay.h"
 
-/*delay n us */
-void delay_us(unsigned long i)
+/* simple delay */
+void Delay(unsigned long i)
 {
-	while( i--)
-	{
-		asm("NOP");
-	}
+  while(i--)
+  {
+    asm("NOP");
+  }
 }
 
 /*
