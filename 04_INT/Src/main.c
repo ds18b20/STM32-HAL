@@ -45,7 +45,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <string.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -118,9 +118,9 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-	  HAL_GPIO_TogglePin(GPIOC, LED2_Pin);
-	  HAL_Delay(500);
     /* USER CODE BEGIN 3 */
+    HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
+    HAL_Delay(500);
   }
   /* USER CODE END 3 */
 }
@@ -163,7 +163,18 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+  if(__HAL_GPIO_EXTI_GET_FLAG(KEY1_EXTI_Pin))
+  {
+    HAL_Delay(20);
+    if(HAL_GPIO_ReadPin(KEY1_EXTI_GPIO_Port, KEY1_EXTI_Pin) == 1)  // if KEY1 is released
+    {
+      HAL_UART_Transmit(&huart1, (uint8_t *) "KEY1 INT\t", strlen("KEY1 INT\t"), 10);
+      HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
+    }
+  }
+}
 /* USER CODE END 4 */
 
 /**

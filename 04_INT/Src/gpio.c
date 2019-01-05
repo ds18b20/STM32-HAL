@@ -40,7 +40,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "gpio.h"
 #include "usart.h"
-#include <string.h>
+
 /* USER CODE BEGIN 0 */
 
 /* USER CODE END 0 */
@@ -129,27 +129,7 @@ void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 2 */
-char hex_display[]="0x00";
-unsigned int i;
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
-	HAL_UART_Transmit(&huart1, (uint8_t *) "callback\t", strlen("callback\t"), 10);
-	i = sprintf((char*)hex_display, "0x%x", GPIO_Pin);
-	HAL_UART_Transmit(&huart1, (uint8_t *) hex_display, strlen(hex_display), 10);
-//	if(GPIO_Pin == KEY1_EXTI_Pin)
-    if(__HAL_GPIO_EXTI_GET_FLAG(KEY1_EXTI_Pin))
-	{/* KEY0 */
-		HAL_Delay(10);
-		HAL_UART_Transmit(&huart1, (uint8_t *) "delay10\t", strlen("delay10\t"), 10);
-		if(HAL_GPIO_ReadPin(KEY1_EXTI_GPIO_Port, KEY1_EXTI_Pin) == 0)//if KEY1 is still PRESSED DOWN
-		{
-			HAL_UART_Transmit(&huart1, (uint8_t *) "pin0\t", strlen("pin0\t"), 10);
-			/* ·­×ªLED0 */
-			HAL_GPIO_TogglePin(GPIOC, LED1_Pin);
-		}
-	}
 
-}
 /* USER CODE END 2 */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
