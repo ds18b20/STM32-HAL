@@ -36,9 +36,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "stm32f1xx_it.h"
-#include "usart.h"
-#include "sensor.h"
-#include <string.h>
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 /* USER CODE END Includes */
@@ -65,36 +62,7 @@ unsigned int Vsync=0;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN PFP */
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
-  /*VSYNC EXTI line: 7*/
-  if(__HAL_GPIO_EXTI_GET_FLAG(VSYNC_EXTI_Pin))
-  {
-    if(Vsync==0)
-    {
-      Vsync=1;
-      FIFO_WEN_H();
-    }
-    else if(Vsync==1)
-    {
-      FIFO_WEN_L();
-      Vsync=2;
-      HAL_GPIO_TogglePin(GPIOC, LED1_Pin);
-    }
 
-  }
-  /*KEY1 EXTI line: 5*/
-  if(__HAL_GPIO_EXTI_GET_FLAG(KEY4_EXTI_Pin))
-  {
-    HAL_Delay(10);
-    if(HAL_GPIO_ReadPin(KEY4_EXTI_GPIO_Port, KEY4_EXTI_Pin) == 0)  // if KEY1 is still PRESSED DOWN
-    {
-      HAL_UART_Transmit(&huart1, (uint8_t *)"KEY4\t", strlen("KEY4\t"), 10);
-      /* ·­×ªLED0 */
-      HAL_GPIO_TogglePin(GPIOC, LED2_Pin);
-    }
-  }
-}
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/

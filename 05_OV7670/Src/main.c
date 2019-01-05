@@ -42,13 +42,12 @@
 #include "main.h"
 #include "usart.h"
 #include "gpio.h"
+
+/* Private includes ----------------------------------------------------------*/
+/* USER CODE BEGIN Includes */
 #include "sensor.h"
 #include "delay.h"
 #include <string.h>
-#include "sample_image.h"
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
-
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -58,7 +57,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+#define DEBUG
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -70,7 +69,7 @@
 
 /* USER CODE BEGIN PV */
 extern unsigned int Vsync;
-unsigned int a, c_data;
+unsigned int a, b, c_data;
 char str[]="0x0000";
 int i;
 /* USER CODE END PV */
@@ -78,121 +77,28 @@ int i;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-void ReadOneFrame(void)
+
+void OV7670_SendOneFrame(void)
 {
-  for(a=0; a<9600; a++)  // 9600*8=320*240
+  for(a=0; a<240*320; a++)  // 240 rows
   {
-    FIFO_RCK_L();
-    asm("NOP");asm("NOP");
-    c_data=GPIOB->IDR&0xff00;//读高位
-    FIFO_RCK_H();
-    asm("NOP");asm("NOP");
-    FIFO_RCK_L();
-    asm("NOP");asm("NOP");
-    c_data|=(GPIOB->IDR>>8)&0x00ff;//读低位
-    FIFO_RCK_H();
-    // LCD_WriteRAM(c_data);//写RGB数据到TFT GRAM
-    i = sprintf(str, "%x", c_data);
-    HAL_UART_Transmit(&huart1, (uint8_t *)str, strlen(str), 10);
-    HAL_UART_Transmit(&huart1, (uint8_t *)",", strlen(","), 10);
-
-    FIFO_RCK_L();
-    asm("NOP");asm("NOP");
-    c_data=GPIOB->IDR&0xff00;//读高位
-    FIFO_RCK_H();
-    asm("NOP");asm("NOP");
-    FIFO_RCK_L();
-    asm("NOP");asm("NOP");
-    c_data|=(GPIOB->IDR>>8)&0x00ff;//读低位
-    FIFO_RCK_H();
-    // LCD_WriteRAM(c_data);//写RGB数据到TFT GRAM
-    i = sprintf(str, "%x", c_data);
-    HAL_UART_Transmit(&huart1, (uint8_t *)str, strlen(str), 10);
-    HAL_UART_Transmit(&huart1, (uint8_t *)",", strlen(","), 10);
-
-    FIFO_RCK_L();
-    asm("NOP");asm("NOP");
-    c_data=GPIOB->IDR&0xff00;//读高位
-    FIFO_RCK_H();
-    asm("NOP");asm("NOP");
-    FIFO_RCK_L();
-    asm("NOP");asm("NOP");
-    c_data|=(GPIOB->IDR>>8)&0x00ff;//读低位
-    FIFO_RCK_H();
-    // LCD_WriteRAM(c_data);//写RGB数据到TFT GRAM
-    i = sprintf(str, "%x", c_data);
-    HAL_UART_Transmit(&huart1, (uint8_t *)str, strlen(str), 10);
-    HAL_UART_Transmit(&huart1, (uint8_t *)",", strlen(","), 10);
-
-    FIFO_RCK_L();
-    asm("NOP");asm("NOP");
-    c_data=GPIOB->IDR&0xff00;//读高位
-    FIFO_RCK_H();
-    asm("NOP");asm("NOP");
-    FIFO_RCK_L();
-    asm("NOP");asm("NOP");
-    c_data|=(GPIOB->IDR>>8)&0x00ff;//读低位
-    FIFO_RCK_H();
-    // LCD_WriteRAM(c_data);//写RGB数据到TFT GRAM
-    i = sprintf(str, "%x", c_data);
-    HAL_UART_Transmit(&huart1, (uint8_t *)str, strlen(str), 10);
-    HAL_UART_Transmit(&huart1, (uint8_t *)",", strlen(","), 10);
-
-    FIFO_RCK_L();
-    asm("NOP");asm("NOP");
-    c_data=GPIOB->IDR&0xff00;//读高位
-    FIFO_RCK_H();
-    asm("NOP");asm("NOP");
-    FIFO_RCK_L();
-    asm("NOP");asm("NOP");
-    c_data|=(GPIOB->IDR>>8)&0x00ff;//读低位
-    FIFO_RCK_H();
-    // LCD_WriteRAM(c_data);//写RGB数据到TFT GRAM
-    i = sprintf(str, "%x", c_data);
-    HAL_UART_Transmit(&huart1, (uint8_t *)str, strlen(str), 10);
-    HAL_UART_Transmit(&huart1, (uint8_t *)",", strlen(","), 10);
-
-    FIFO_RCK_L();
-    asm("NOP");asm("NOP");
-    c_data=GPIOB->IDR&0xff00;//读高位
-    FIFO_RCK_H();
-    asm("NOP");asm("NOP");
-    FIFO_RCK_L();
-    asm("NOP");asm("NOP");
-    c_data|=(GPIOB->IDR>>8)&0x00ff;//读低位
-    FIFO_RCK_H();
-    // LCD_WriteRAM(c_data);//写RGB数据到TFT GRAM
-    i = sprintf(str, "%x", c_data);
-    HAL_UART_Transmit(&huart1, (uint8_t *)str, strlen(str), 10);
-    HAL_UART_Transmit(&huart1, (uint8_t *)",", strlen(","), 10);
-
-    FIFO_RCK_L();
-    asm("NOP");asm("NOP");
-    c_data=GPIOB->IDR&0xff00;//读高位
-    FIFO_RCK_H();
-    asm("NOP");asm("NOP");
-    FIFO_RCK_L();
-    asm("NOP");asm("NOP");
-    c_data|=(GPIOB->IDR>>8)&0x00ff;//读低位
-    FIFO_RCK_H();
-    // LCD_WriteRAM(c_data);//写RGB数据到TFT GRAM
-    i = sprintf(str, "%x", c_data);
-    HAL_UART_Transmit(&huart1, (uint8_t *)str, strlen(str), 10);
-    HAL_UART_Transmit(&huart1, (uint8_t *)",", strlen(","), 10);
-
-    FIFO_RCK_L();
-    asm("NOP");asm("NOP");
-    c_data=GPIOB->IDR&0xff00;//读高位
-    FIFO_RCK_H();
-    asm("NOP");asm("NOP");
-    FIFO_RCK_L();
-    asm("NOP");asm("NOP");
-    c_data|=(GPIOB->IDR>>8)&0x00ff;//读低位
-    FIFO_RCK_H();
-    // LCD_WriteRAM(c_data);//写RGB数据到TFT GRAM
-    i = sprintf(str, "%x", c_data);
-    HAL_UART_Transmit(&huart1, (uint8_t *)str, strlen(str), 10);
-    HAL_UART_Transmit(&huart1, (uint8_t *)",", strlen(","), 10);
+    for(b=0; b<320; b++)  // 320 columns
+    {
+      FIFO_RCK_L();
+      asm("NOP");asm("NOP");
+      c_data=GPIOB->IDR&0xff00;  // read high-8 bits of 1 byte
+      FIFO_RCK_H();
+      asm("NOP");asm("NOP");
+      FIFO_RCK_L();
+      asm("NOP");asm("NOP");
+      c_data|=(GPIOB->IDR>>8)&0x00ff;  // read low-8 bits of 1 byte
+      FIFO_RCK_H();
+      // LCD_WriteRAM(c_data);  // write RGB565 data to TFT GRAM
+      i = sprintf(str, "%x", c_data);
+      HAL_UART_Transmit(&huart1, (uint8_t *)str, strlen(str), 10);
+      HAL_UART_Transmit(&huart1, (uint8_t *)",", strlen(","), 10);
+    }
+    HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
   }
 }
 /* USER CODE END PFP */
@@ -249,7 +155,7 @@ int main(void)
   FIFO_RCK_L();
   FIFO_RRST_H();
   FIFO_RCK_H();
-  delay_us(50);
+  Delay(50);
   ////////////////////////////////////////
   /* USER CODE END 2 */
 
@@ -257,32 +163,33 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-
     /* USER CODE END WHILE */
+    /* USER CODE BEGIN 3 */
     if(!HAL_GPIO_ReadPin(GPIOE, KEY1_Pin))  // 0
     {
       HAL_Delay(10);
       if(HAL_GPIO_ReadPin(GPIOE, KEY1_Pin))  // 1
       {
-//	  OV7670_Send_Sample();
-
-	if(Vsync==2)
-	{
-	  FIFO_RRST_L();
-	  FIFO_RCK_L();
-	  FIFO_RCK_H();
-	  FIFO_RCK_L();
-	  FIFO_RRST_H();
-	  FIFO_RCK_H();
-
-	  ReadOneFrame();
+	#ifdef DEBUG
+	  OV7670_SendOneFrame_ColorBar();
 	  HAL_UART_Transmit(&huart1, (uint8_t *)"\r", strlen("\r"), 10);
-	  Vsync=0;
-	}
+	#else
+	  if(Vsync==2)
+	  {
+	    FIFO_RRST_L();
+	    FIFO_RCK_L();
+	    FIFO_RCK_H();
+	    FIFO_RCK_L();
+	    FIFO_RRST_H();
+	    FIFO_RCK_H();
 
+	    OV7670_SendOneFrame();
+	    HAL_UART_Transmit(&huart1, (uint8_t *)"\r", strlen("\r"), 10);
+	    Vsync=0;
+          }
+	#endif
       }
     }
-    /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
 }
@@ -325,7 +232,36 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+  /*VSYNC EXTI line: 7*/
+  if(__HAL_GPIO_EXTI_GET_FLAG(VSYNC_EXTI_Pin))
+  {
+    if(Vsync==0)
+    {
+      Vsync=1;
+      FIFO_WEN_H();
+    }
+    else if(Vsync==1)
+    {
+      FIFO_WEN_L();
+      Vsync=2;
+      HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
+    }
 
+  }
+  /*KEY1 EXTI line: 5*/
+  if(__HAL_GPIO_EXTI_GET_FLAG(KEY4_EXTI_Pin))
+  {
+    HAL_Delay(10);
+    if(HAL_GPIO_ReadPin(KEY4_EXTI_GPIO_Port, KEY4_EXTI_Pin) == 0)  // if KEY1 is still PRESSED DOWN
+    {
+      HAL_UART_Transmit(&huart1, (uint8_t *)"KEY4\t", strlen("KEY4\t"), 10);
+      /* 翻转LED0 */
+      HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
+    }
+  }
+}
 /* USER CODE END 4 */
 
 /**

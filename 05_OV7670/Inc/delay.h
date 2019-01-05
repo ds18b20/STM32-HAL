@@ -2,6 +2,6 @@
 #define _delay_H
 
 /*delay n us */
-void delay_us(unsigned long time);
+void Delay(unsigned long time);
 
 #endif
