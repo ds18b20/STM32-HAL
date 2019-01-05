@@ -559,12 +559,6 @@ void HAL_GPIO_EXTI_IRQHandler(uint16_t GPIO_Pin)
     HAL_GPIO_EXTI_Callback(GPIO_Pin);
     __HAL_GPIO_EXTI_CLEAR_IT(GPIO_Pin);
   }
-
-//	 if(__HAL_GPIO_EXTI_GET_FLAG(GPIO_Pin))
-//	 {
-//		 HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_6); // toggle LD2 LED
-//	 }
-
 }
 
 /**
