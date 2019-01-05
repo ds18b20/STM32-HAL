@@ -57,7 +57,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define DEBUG
+//#define DEBUG
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -80,7 +80,7 @@ void SystemClock_Config(void);
 
 void OV7670_SendOneFrame(void)
 {
-  for(a=0; a<240*320; a++)  // 240 rows
+  for(a=0; a<240; a++)  // 240 rows
   {
     for(b=0; b<320; b++)  // 320 columns
     {
