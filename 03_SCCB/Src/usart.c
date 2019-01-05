@@ -10,7 +10,7 @@
   * inserted by the user or by software development tools
   * are owned by their respective copyright owners.
   *
-  * COPYRIGHT(c) 2018 STMicroelectronics
+  * COPYRIGHT(c) 2019 STMicroelectronics
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -39,9 +39,9 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "usart.h"
-#include <string.h>
 
 /* USER CODE BEGIN 0 */
+#include <string.h>
 /* Ref:
  * https://simonmartin.ch/resources/stm32/dl/STM32%20Tutorial%2003%20-%20UART%20Communication%20using%20HAL%20(and%20FreeRTOS).pdf*/
 /* print a string followed*/

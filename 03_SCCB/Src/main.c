@@ -42,11 +42,10 @@
 #include "main.h"
 #include "usart.h"
 #include "gpio.h"
-#include "sensor.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "sensor.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -129,20 +128,22 @@ int main(void)
   debugPrint(&huart1, ret);
   while (1)
   {
-	  /* USER CODE END WHILE */
-	if(!HAL_GPIO_ReadPin(GPIOE, KEY1_Pin))
-	{
-		HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_6);
-
-		HAL_Delay(100);
-
-		debugPrint(&huart1, "Read sensor:\t");
-//		rd_Sensor_Reg(0x0A, &rev);
-		rd_Sensor_Reg(0x1C, &rev);
-		i = sprintf((char*)hex_display, "0x%x", rev);
-		debugPrint(&huart1, hex_display);
-	}
+    /* USER CODE END WHILE */
     /* USER CODE BEGIN 3 */
+    if(!HAL_GPIO_ReadPin(KEY1_GPIO_Port, KEY1_Pin))
+    {
+      HAL_Delay(20);
+      if(HAL_GPIO_ReadPin(KEY1_GPIO_Port, KEY1_Pin))
+      {
+	HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
+	HAL_Delay(100);
+	debugPrint(&huart1, "Read sensor:\t");
+//              rd_Sensor_Reg(0x0A, &rev);
+	rd_Sensor_Reg(0x1C, &rev);
+	i = sprintf((char*)hex_display, "0x%x", rev);
+	debugPrint(&huart1, hex_display);
+      }
+    }
   }
   /* USER CODE END 3 */
 }

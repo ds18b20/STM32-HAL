@@ -10,7 +10,7 @@
   * inserted by the user or by software development tools
   * are owned by their respective copyright owners.
   *
-  * COPYRIGHT(c) 2018 STMicroelectronics
+  * COPYRIGHT(c) 2019 STMicroelectronics
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -59,6 +59,7 @@
 */
 void MX_GPIO_Init(void)
 {
+
   GPIO_InitTypeDef GPIO_InitStruct = {0};
 
   /* GPIO Ports Clock Enable */
@@ -68,61 +69,59 @@ void MX_GPIO_Init(void)
   __HAL_RCC_GPIOA_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, FIFO_WEN_Pin|FIFO_RRST_Pin|FIFO_OE_Pin|FIFO_RCK_Pin|LED1_Pin|LED2_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOC, FIFO_WEN_Pin|FIFO_RRST_Pin|FIFO_OE_Pin|FIFO_RCK_Pin 
+                          |LED1_Pin|LED2_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pin Output Level: GPIOB_Pin[5] = SCCB_SCL_Pin : High
-   *                                 GPIOB_Pin[6] = SCCB_SDA_Pin : High
-   * */
+  /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, SCCB_SCL_Pin|SCCB_SDA_Pin, GPIO_PIN_SET);
 
-  /*Configure GPIO pin Output Level: GPIOB_Pin[7] = VSYNC_Pin : Low */
+  /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(VSYNC_GPIO_Port, VSYNC_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins: GPIOE_Pin[2] = KEY4_Pin
-   *                     GPIOE_Pin[3] = KEY3_Pin
-   *                     GPIOE_Pin[4] = KEY2_Pin
-   *                     GPIOE_Pin[5] = KEY1_Pin
-   *  */
+  /*Configure GPIO pins : PEPin PEPin PEPin PEPin */
   GPIO_InitStruct.Pin = KEY4_Pin|KEY3_Pin|KEY2_Pin|KEY1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
-  /*Configure GPIO pins: GPIOC_Pin[2] = FIFO_WEN_Pin
-   *                     GPIOC_Pin[4] = FIFO_OE_Pin
-   *                     GPIOC_Pin[5] = FIFO_RCK_Pin
-   *                     GPIOC_Pin[6] = LED1_Pin
-   *                     GPIOC_Pin[7] = LED2_Pin
-   *
-   *  */
-  GPIO_InitStruct.Pin = FIFO_WEN_Pin|FIFO_OE_Pin|FIFO_RCK_Pin|LED1_Pin|LED2_Pin;
+  /*Configure GPIO pins : PCPin PCPin PCPin PCPin 
+                           PCPin */
+  GPIO_InitStruct.Pin = FIFO_WEN_Pin|FIFO_OE_Pin|FIFO_RCK_Pin|LED1_Pin 
+                          |LED2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pin: GPIOC_Pin[3] = FIFO_RRST_Pin */
+  /*Configure GPIO pin : PtPin */
   GPIO_InitStruct.Pin = FIFO_RRST_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(FIFO_RRST_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins: GPIOB_Pin[8:15] = DATA[0:7] */
-  GPIO_InitStruct.Pin = BIT0_Pin|BIT1_Pin|BIT2_Pin|BIT3_Pin|BIT4_Pin|BIT5_Pin|BIT6_Pin|BIT7_Pin;
+  /*Configure GPIO pins : PBPin PBPin PBPin PBPin 
+                           PBPin PBPin PBPin PBPin */
+  GPIO_InitStruct.Pin = BIT2_Pin|BIT3_Pin|BIT4_Pin|BIT5_Pin 
+                          |BIT6_Pin|BIT7_Pin|BIT0_Pin|BIT1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pins: GPIOB_Pin[5] = SCCB_SCL_Pin
-   *                     GPIOB_Pin[6] = SCCB_SDA_Pin
-   *                     GPIOB_Pin[7] = VSYNC_Pin
-   * */
-  GPIO_InitStruct.Pin = SCCB_SCL_Pin|SCCB_SDA_Pin|VSYNC_Pin;
+  /*Configure GPIO pins : PBPin PBPin */
+  GPIO_InitStruct.Pin = SCCB_SCL_Pin|SCCB_SDA_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PtPin */
+  GPIO_InitStruct.Pin = VSYNC_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+  HAL_GPIO_Init(VSYNC_GPIO_Port, &GPIO_InitStruct);
+
 }
 
 /* USER CODE BEGIN 2 */
