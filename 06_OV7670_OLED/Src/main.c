@@ -45,7 +45,12 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "sensor.h"
 #include "oled.h"
+#include "delay.h"
+#include <string.h>
+
+#include "color_bar_test.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -55,7 +60,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define DEBUG
+//#define DEBUG
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -66,13 +71,40 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+//extern unsigned int Vsync;
+unsigned int Vsync=0;
+unsigned int a, b, c_data;
+char str[]="0x0000";
+int i;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
 
+void OV7670_SendOneFrame(void)
+{
+  for(a=0; a<240; a++)  // 240 rows
+  {
+    for(b=0; b<320; b++)  // 320 columns
+    {
+      FIFO_RCK_L();
+      asm("NOP");asm("NOP");
+      c_data=GPIOB->IDR&0xff00;  // read high-8 bits of 1 byte
+      FIFO_RCK_H();
+      asm("NOP");asm("NOP");
+      FIFO_RCK_L();
+      asm("NOP");asm("NOP");
+      c_data|=(GPIOB->IDR>>8)&0x00ff;  // read low-8 bits of 1 byte
+      FIFO_RCK_H();
+      // LCD_WriteRAM(c_data);  // write RGB565 data to TFT GRAM
+      i = sprintf(str, "%x", c_data);
+      HAL_UART_Transmit(&huart1, (uint8_t *)str, strlen(str), 10);
+      HAL_UART_Transmit(&huart1, (uint8_t *)",", strlen(","), 10);
+    }
+    HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
+  }
+}
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -87,7 +119,7 @@ void SystemClock_Config(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-  unsigned int i;
+
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -111,6 +143,23 @@ int main(void)
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
   OLED_Init();
+  HAL_UART_Transmit(&huart1, (uint8_t *)"Init...", strlen("Init..."), 10);
+
+  FIFO_OE_L();
+  FIFO_WEN_H();
+
+  while(1!=Sensor_init()){}  // Init CMOS Sensor
+  HAL_UART_Transmit(&huart1, (uint8_t *)"Init OK", strlen("Init OK"), 10);
+  Vsync=0;
+  ////////////////////////////////////////
+  FIFO_RRST_L();
+  FIFO_RCK_L();
+  FIFO_RCK_H();
+  FIFO_RCK_L();
+  FIFO_RRST_H();
+  FIFO_RCK_H();
+  Delay(50);
+  ////////////////////////////////////////
 //  DispStr_GB2312(20,0,"¹þ¹þ");
   OLED_DispStr(0,0, (uint8_t*)"Size 8X6 Test", FONT_8X6);
   OLED_DispStr(0,6, (uint8_t*)"Size 16X8 Test", FONT_16X8);
@@ -123,15 +172,31 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    #ifdef DEBUG
-      HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
-      for(i=0; i<500; i++)
+      if(!HAL_GPIO_ReadPin(GPIOE, KEY1_Pin))  // 0
       {
-	Delay_Us(1000);
+        HAL_Delay(10);
+        if(HAL_GPIO_ReadPin(GPIOE, KEY1_Pin))  // 1
+        {
+  	#ifdef DEBUG
+  	  OV7670_SendOneFrame_ColorBar();
+  	  HAL_UART_Transmit(&huart1, (uint8_t *)"\r", strlen("\r"), 10);
+  	#else
+  	  if(Vsync==2)
+  	  {
+  	    FIFO_RRST_L();
+  	    FIFO_RCK_L();
+  	    FIFO_RCK_H();
+  	    FIFO_RCK_L();
+  	    FIFO_RRST_H();
+  	    FIFO_RCK_H();
+
+  	    OV7670_SendOneFrame();
+  	    HAL_UART_Transmit(&huart1, (uint8_t *)"\r", strlen("\r"), 10);
+  	    Vsync=0;
+            }
+  	#endif
+        }
       }
-    #else
-      asm("NOP");
-    #endif
   }
   /* USER CODE END 3 */
 }
@@ -174,7 +239,36 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+  /*VSYNC EXTI line: 7*/
+  if(__HAL_GPIO_EXTI_GET_FLAG(VSYNC_EXTI_Pin))
+  {
+    if(Vsync==0)
+    {
+      Vsync=1;
+      FIFO_WEN_H();
+    }
+    else if(Vsync==1)
+    {
+      FIFO_WEN_L();
+      Vsync=2;
+      HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
+    }
 
+  }
+  /*KEY1 EXTI line: 5*/
+  if(__HAL_GPIO_EXTI_GET_FLAG(KEY4_EXTI_Pin))
+  {
+    HAL_Delay(10);
+    if(HAL_GPIO_ReadPin(KEY4_EXTI_GPIO_Port, KEY4_EXTI_Pin) == 0)  // if KEY1 is still PRESSED DOWN
+    {
+      HAL_UART_Transmit(&huart1, (uint8_t *)"KEY4\t", strlen("KEY4\t"), 10);
+      /* ·­×ªLED0 */
+      HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
+    }
+  }
+}
 /* USER CODE END 4 */
 
 /**
