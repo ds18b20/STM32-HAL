@@ -143,13 +143,15 @@ int main(void)
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
   OLED_Init();
-  HAL_UART_Transmit(&huart1, (uint8_t *)"Init...", strlen("Init..."), 10);
+  HAL_UART_Transmit(&huart1, (uint8_t *)"Init ", strlen("Init "), 10);
+  HAL_UART_Transmit(&huart1, (uint8_t *)"ov7670...\n", strlen("ov7670...\n"), 10);
 
   FIFO_OE_L();
   FIFO_WEN_H();
 
   while(1!=Sensor_init()){}  // Init CMOS Sensor
-  HAL_UART_Transmit(&huart1, (uint8_t *)"Init OK", strlen("Init OK"), 10);
+  HAL_UART_Transmit(&huart1, (uint8_t *)"Init ", strlen("Init "), 10);
+  HAL_UART_Transmit(&huart1, (uint8_t *)"ov7670 OK!\n", strlen("ov7670 OK!\n"), 10);
   Vsync=0;
   ////////////////////////////////////////
   FIFO_RRST_L();
@@ -158,7 +160,7 @@ int main(void)
   FIFO_RCK_L();
   FIFO_RRST_H();
   FIFO_RCK_H();
-  Delay(50);
+  Delay_Us(50);
   ////////////////////////////////////////
 //  DispStr_GB2312(20,0,"¹þ¹þ");
   OLED_DispStr(0,0, (uint8_t*)"Size 8X6 Test", FONT_8X6);
@@ -170,33 +172,32 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
     /* USER CODE BEGIN 3 */
-      if(!HAL_GPIO_ReadPin(GPIOE, KEY1_Pin))  // 0
+    if(!HAL_GPIO_ReadPin(GPIOE, KEY1_Pin))  // 0
+    {
+      HAL_Delay(10);
+      if(HAL_GPIO_ReadPin(GPIOE, KEY1_Pin))  // 1
       {
-        HAL_Delay(10);
-        if(HAL_GPIO_ReadPin(GPIOE, KEY1_Pin))  // 1
-        {
-  	#ifdef DEBUG
-  	  OV7670_SendOneFrame_ColorBar();
-  	  HAL_UART_Transmit(&huart1, (uint8_t *)"\r", strlen("\r"), 10);
-  	#else
-  	  if(Vsync==2)
-  	  {
-  	    FIFO_RRST_L();
-  	    FIFO_RCK_L();
-  	    FIFO_RCK_H();
-  	    FIFO_RCK_L();
-  	    FIFO_RRST_H();
-  	    FIFO_RCK_H();
+      #ifdef DEBUG
+	OV7670_SendOneFrame_ColorBar();
+	HAL_UART_Transmit(&huart1, (uint8_t *)"\r", strlen("\r"), 10);
+      #else
+	if(Vsync==2)
+	{
+	  FIFO_RRST_L();
+	  FIFO_RCK_L();
+	  FIFO_RCK_H();
+	  FIFO_RCK_L();
+	  FIFO_RRST_H();
+	  FIFO_RCK_H();
 
-  	    OV7670_SendOneFrame();
-  	    HAL_UART_Transmit(&huart1, (uint8_t *)"\r", strlen("\r"), 10);
-  	    Vsync=0;
-            }
-  	#endif
-        }
+	  OV7670_SendOneFrame();
+	  HAL_UART_Transmit(&huart1, (uint8_t *)"\r", strlen("\r"), 10);
+	  Vsync=0;
+	}
+      #endif
       }
+    }
   }
   /* USER CODE END 3 */
 }

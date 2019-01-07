@@ -38,13 +38,13 @@ unsigned char wr_Sensor_Reg(unsigned char regID, unsigned char regDat)
     stopSCCB();  // send SCCB stop sequence
     return(0);  // if error: return 0
   }
-  Delay(20);
+  Delay_Us(20);
   if(0==SCCBwriteByte(regID))  // write register ID
   {
     stopSCCB();  // send SCCB stop sequence
     return(0);  // if error: return 0
   }
-  Delay(20);
+  Delay_Us(20);
   if(0==SCCBwriteByte(regDat))  // write data into register
   {
     stopSCCB();  // send SCCB stop sequence
@@ -69,7 +69,7 @@ unsigned char rd_Sensor_Reg(unsigned char regID, unsigned char *regDat)
     HAL_UART_Transmit(&huart1, (uint8_t *)"yyy", strlen("yyy"), 10);
     return(0);  // if error: return 0
   }
-  Delay(20);
+  Delay_Us(20);
   if(0==SCCBwriteByte(regID))  // write ov7670 register ID
   {
     stopSCCB();  // send SCCB stop sequence
@@ -79,7 +79,7 @@ unsigned char rd_Sensor_Reg(unsigned char regID, unsigned char *regDat)
   /* a stop is needed(differ from IIC) */
   stopSCCB();  // send SCCB stop sequence
 
-  Delay(20);
+  Delay_Us(20);
 
   /* read value from register */
   startSCCB();
@@ -89,7 +89,7 @@ unsigned char rd_Sensor_Reg(unsigned char regID, unsigned char *regDat)
     HAL_UART_Transmit(&huart1, (uint8_t *)"qqq", strlen("qqq"), 10);
     return(0);  // if error: return 0
   }
-  Delay(20);
+  Delay_Us(20);
   *regDat=SCCBreadByte();  // return read value
   noAck();  // send SCCB NACK sequence
   stopSCCB();  // send SCCB stop sequence
@@ -103,7 +103,6 @@ unsigned char rd_Sensor_Reg(unsigned char regID, unsigned char *regDat)
 unsigned char Sensor_init(void)
 {
   unsigned char temp;
-  unsigned char hex_display[]="0x00\t";
   unsigned int i=0;
 //  XCLK_init_ON();  // switch on MCO to supply clock for CMOS sensor if there is no external crystal oscillator
 //  uchar ovidmsb=0,
@@ -114,23 +113,13 @@ unsigned char Sensor_init(void)
   temp=0x80;
   if(0==wr_Sensor_Reg(0x12, temp)) //Reset SCCB
   {
-    HAL_UART_Transmit(&huart1, (uint8_t *) "Reset Error\t", strlen("Reset Error\t"), 10);
     return 0 ;  // return 0 if error
   }
-  HAL_UART_Transmit(&huart1, (uint8_t *) "Reset OK\t", strlen("Reset OK\t"), 10);
-  //	Delay(1);
-  Delay(1);
+  Delay_Us(10);
   if(0==rd_Sensor_Reg(0x0b, &temp))  // read ID
   {
-    HAL_UART_Transmit(&huart1, (uint8_t *) "ID Error\t", strlen("ID Error\t"), 10);
     return 0 ;  // return 0 if error
   }
-  HAL_UART_Transmit(&huart1, (uint8_t *) "ID OK\t", strlen("ID OK\t"), 10);
-
-  /*integer or char to hex_string */
-  i = sprintf((char*)hex_display, "0x%x", temp);
-  hex_display[4] = '\t';
-  HAL_UART_Transmit(&huart1, (uint8_t *) hex_display, strlen((const char*)hex_display), 10);
 
   if(temp==0x73)//OV7670
   {
