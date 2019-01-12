@@ -45,7 +45,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "serial.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -110,7 +110,8 @@ int main(void)
   MX_GPIO_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-
+  Uart_Send_Demo_Strings();
+  Uart_Send_Demo_ASCII_Art();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -118,7 +119,6 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
     /* USER CODE BEGIN 3 */
     if(!HAL_GPIO_ReadPin(KEY1_GPIO_Port, KEY1_Pin))
     {
@@ -126,7 +126,10 @@ int main(void)
       if(HAL_GPIO_ReadPin(KEY1_GPIO_Port, KEY1_Pin))
       {
         HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
-        UartSendDemoStrings("test");  // only <=12 bytes can be received from PC side, Don't know WHY!!!
+        // only <=12 bytes can be received from PC side, Don't know WHY!!!
+        // ==>Because Timeout is set to 10 Ms
+        // 9600 bits/s * 0.01 s = 96 bits = 12 Bytes
+        Debug_Print_ln(&huart1, "01234567890123456789");
       }
     }
   }

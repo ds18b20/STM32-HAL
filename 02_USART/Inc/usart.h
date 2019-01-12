@@ -47,9 +47,6 @@
 #include "main.h"
 
 /* USER CODE BEGIN Includes */
-void UartSendDemoStrings(void * argument);
-void UartReceiveDemoStrings(void *argument);
-void debugPrint(UART_HandleTypeDef *huart, char _out[]);
 
 /* USER CODE END Includes */
 

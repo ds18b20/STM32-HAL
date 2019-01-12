@@ -27,7 +27,7 @@
 unsigned char wr_Sensor_Reg(unsigned char regID, unsigned char regDat);
 unsigned char rd_Sensor_Reg(unsigned char regID, unsigned char *regDat);
 
-unsigned char Sensor_init(void);
+unsigned char Sensor_init(unsigned char color_mode);
 void Sensor_GPIO_Init(void);
 void Sensor_EXTI_Config(void);  // VSYNC interruption
 void Sensor_Interrupts_Config(void);

@@ -9,6 +9,7 @@
 #include <string.h>
 
 extern const char OV7670_reg[OV7670_REG_NUM][2];
+//extern const char ov7670_init_reg_tbl_YUV[OV7670_REG_NUM][2];
 /*
  *Function: supply CLOCK for sensor if no crystal oscillator installed
  *
@@ -100,7 +101,7 @@ unsigned char rd_Sensor_Reg(unsigned char regID, unsigned char *regDat)
  * if success: return 1
  * if error: return 0
  * */
-unsigned char Sensor_init(void)
+unsigned char Sensor_init(unsigned char color_mode)
 {
   unsigned char temp;
   unsigned int i=0;
@@ -123,14 +124,24 @@ unsigned char Sensor_init(void)
 
   if(temp==0x73)//OV7670
   {
-    for(i=0; i<OV7670_REG_NUM; i++)
+    if(color_mode)
     {
-      if(0==wr_Sensor_Reg(OV7670_reg[i][0], OV7670_reg[i][1]))
+      for(i=0; i<OV7670_REG_NUM; i++)
       {
-	return 0;  // return 0 if error
+	if(0==wr_Sensor_Reg(OV7670_reg[i][0], OV7670_reg[i][1]))
+	{
+	  return 0;  // return 0 if error
+	}
       }
     }
-
+    else
+    {
+      for(i=0;i<sizeof(ov7670_init_reg_tbl_YUV)/sizeof(ov7670_init_reg_tbl_YUV[0])/2;i++)
+      {
+	wr_Sensor_Reg(ov7670_init_reg_tbl_YUV[i][0], ov7670_init_reg_tbl_YUV[i][1]);
+	HAL_Delay(2);
+      }
+    }
 //  Sensor_EXTI_Config();  // configured in file: gpio.c
 //  Sensor_Interrupts_Config();  // configured in file: gpio.c
   }
