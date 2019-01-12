@@ -119,6 +119,7 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
+
     /* USER CODE BEGIN 3 */
     if(!HAL_GPIO_ReadPin(KEY1_GPIO_Port, KEY1_Pin))
     {
