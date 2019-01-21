@@ -3,6 +3,7 @@ nn in C
 *******************************************************************************/
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <assert.h>
 #include <math.h>
 #include "nn.h"
@@ -148,7 +149,7 @@ unsigned int Argmax(Feature_TypeDef f)
 }
 
 /** Function: Generate a Feature **/
-Feature_TypeDef Generate_Feature(char *name, unsigned int channel_size, unsigned int row_size, unsigned int column_size)
+Feature_TypeDef Generate_Feature(char name[], unsigned int channel_size, unsigned int row_size, unsigned int column_size)
 {
 	float* pFeature = (float *)calloc(channel_size*row_size*column_size, sizeof(float));
 	if(NULL == pFeature)
@@ -157,7 +158,8 @@ Feature_TypeDef Generate_Feature(char *name, unsigned int channel_size, unsigned
         exit(-1);
     }
     Feature_TypeDef feature;
-    feature.name = name;
+    strcpy(feature.name, name);
+//    feature.name = name;
     feature.chn_size = channel_size;
     feature.row_size = row_size;
     feature.col_size = column_size;
@@ -294,7 +296,7 @@ int main()
     for(i=0;i<CONV1_FILTER_NUM;i++)
     {
         conv1_filters[i] = Generate_Feature("conv_1_filter", CONV1_INPUT_CHN_SIZE, CONV1_FILTER_SIZE, CONV1_FILTER_SIZE);
-        Init_Feature_by_Array(conv1_filters[i], filter_w+i);
+        Init_Feature_by_Array(conv1_filters[i], filter_w[i]);
     }
     /* define bias */
     Feature_TypeDef conv1_bias = Generate_Feature("conv_1_bias", CONV1_FILTER_NUM, 1, 1);
@@ -327,8 +329,8 @@ int main()
     /* define relu1 output feature */
     // new feature not needed
     Relu_Layer_TypeDef relu1_layer;
-    relu1_layer.input_f = conv1_layer.output_f;  relu1_layer.input_f.name = "relu_1_input";
-    relu1_layer.output_f = conv1_layer.output_f; relu1_layer.output_f.name = "relu_1_output";
+    relu1_layer.input_f = conv1_layer.output_f;  strcpy(relu1_layer.input_f.name, "relu_1_input");
+    relu1_layer.output_f = conv1_layer.output_f; strcpy(relu1_layer.output_f.name, "relu_1_output");
     /** RUN **/
     Run_Relu(relu1_layer);
 
@@ -364,7 +366,7 @@ int main()
     for(i=0;i<AFFINE1_WEIGHT_NUM;i++)
     {
         affine1_weights[i] = Generate_Feature("affine_1_weight", 1, 1, AFFINE1_WEIGHT_SIZE);
-        Init_Feature_by_Array(affine1_weights[i], affine1_w+i);
+        Init_Feature_by_Array(affine1_weights[i], affine1_w[i]);
     }
     Affine_Layer_TypeDef affine1_layer;
     affine1_layer.input_f = pooling1_layer.output_f;
@@ -389,8 +391,8 @@ int main()
     /* define relu1 output feature */
     // new feature not needed
     Relu_Layer_TypeDef relu2_layer;
-    relu2_layer.input_f = affine1_layer.output_f;  relu2_layer.input_f.name = "relu_2_input";
-    relu2_layer.output_f = affine1_layer.output_f; relu2_layer.output_f.name = "relu_2_output";
+    relu2_layer.input_f = affine1_layer.output_f;  strcpy(relu2_layer.input_f.name, "relu_2_input");
+    relu2_layer.output_f = affine1_layer.output_f; strcpy(relu2_layer.output_f.name, "relu_2_output");
     /** RUN **/
     Run_Relu(relu2_layer);
 
@@ -407,7 +409,7 @@ int main()
     for(i=0;i<AFFINE2_WEIGHT_NUM;i++)
     {
         affine2_weights[i] = Generate_Feature("affine_2_weight", 1, 1, AFFINE2_WEIGHT_SIZE);
-        Init_Feature_by_Array(affine2_weights[i], affine2_w+i);
+        Init_Feature_by_Array(affine2_weights[i], affine2_w[i]);
     }
     Affine_Layer_TypeDef affine2_layer;
     affine2_layer.input_f = relu2_layer.output_f;

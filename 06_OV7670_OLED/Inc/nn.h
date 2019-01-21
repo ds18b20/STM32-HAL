@@ -90,7 +90,7 @@ typedef data & layer
 /* typedef Feature */
 typedef struct
 {
-    char *name;
+    char name[30];
     unsigned int chn_size;       /*!< channel size of Feature */
     unsigned int row_size;       /*!< row size of Feature */
     unsigned int col_size;       /*!< column size of Feature */
