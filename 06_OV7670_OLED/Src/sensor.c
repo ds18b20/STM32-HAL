@@ -4,6 +4,7 @@
  * */
 #include "usart.h"
 #include "delay.h"
+#include "serial.h"
 #include "sensor.h"
 #include "sensor_config.h"
 #include <string.h>
@@ -114,12 +115,14 @@ unsigned char Sensor_init(unsigned char color_mode)
   temp=0x80;
   if(0==wr_Sensor_Reg(0x12, temp)) //Reset SCCB
   {
-    return 0 ;  // return 0 if error
+	  Debug_Print_ln(&huart1, "wr_Sensor_Reg error");
+	  return 0 ;  // return 0 if error
   }
   Delay_Us(10);
   if(0==rd_Sensor_Reg(0x0b, &temp))  // read ID
   {
-    return 0 ;  // return 0 if error
+	  Debug_Print_ln(&huart1, "read temp error");
+	  return 0 ;  // return 0 if error
   }
 
   if(temp==0x73)//OV7670
@@ -128,22 +131,84 @@ unsigned char Sensor_init(unsigned char color_mode)
     {
       for(i=0; i<OV7670_REG_NUM; i++)
       {
-	if(0==wr_Sensor_Reg(OV7670_reg[i][0], OV7670_reg[i][1]))
-	{
-	  return 0;  // return 0 if error
-	}
+		if(0==wr_Sensor_Reg(OV7670_reg[i][0], OV7670_reg[i][1]))
+		{
+			Debug_Print_ln(&huart1, "write color params error");
+			return 0;  // return 0 if error
+		}
       }
     }
     else
     {
       for(i=0;i<sizeof(ov7670_init_reg_tbl_YUV)/sizeof(ov7670_init_reg_tbl_YUV[0])/2;i++)
       {
-	wr_Sensor_Reg(ov7670_init_reg_tbl_YUV[i][0], ov7670_init_reg_tbl_YUV[i][1]);
-	HAL_Delay(2);
+		wr_Sensor_Reg(ov7670_init_reg_tbl_YUV[i][0], ov7670_init_reg_tbl_YUV[i][1]);
+		HAL_Delay(2);
       }
     }
 //  Sensor_EXTI_Config();  // configured in file: gpio.c
 //  Sensor_Interrupts_Config();  // configured in file: gpio.c
   }
   return 0x01;  // return 1 = OK
+}
+
+unsigned char OV7670_config_window(uint16_t start_h, uint16_t start_w, uint16_t height, uint16_t width)
+{
+	uint16_t endx=(start_w+width*2)%784;
+	uint16_t endy=(start_h+height*2);
+	uint8_t x_reg, y_reg;
+	uint8_t state=0;
+	uint8_t temp=0;
+
+	state += rd_Sensor_Reg(0x32, &x_reg);
+	x_reg &= 0xC0;
+	state += rd_Sensor_Reg(0x03, &y_reg);
+	y_reg &= 0xF0;
+	// set HREF
+	temp = x_reg|((endx&0x7)<<3)|(start_w&0x7);
+	state += wr_Sensor_Reg(0x32, temp);
+	temp = (start_w&0x7F8)>>3;
+	state += wr_Sensor_Reg(0x17, temp);
+	temp = (endx&0x7F8)>>3;
+	state += wr_Sensor_Reg(0x18, temp);
+	// set VREF
+	temp = y_reg|((endy&0x3)<<2)|(start_h&0x3);
+	state += wr_Sensor_Reg(0x03, temp);
+	temp = (start_h&0x3FC)>>2;
+	state += wr_Sensor_Reg(0x19, temp);
+	temp = (endy&0x3FC)>>2;
+	state += wr_Sensor_Reg(0x1A, temp);
+
+	return state;
+}
+
+/*
+ * Store a set of start/stop values into the camera.
+ * https://chromium.googlesource.com/chromiumos/third_party/kernel-next/+/0.12.433.B/drivers/media/video/ov7670.c
+ */
+int ov7670_set_hw(int hstart, int hstop, int vstart, int vstop)
+{
+	int ret;
+	unsigned char v;
+/*
+ * Horizontal: 11 bits, top 8 live in hstart and hstop.  Bottom 3 of
+ * hstart are in href[2:0], bottom 3 of hstop in href[5:3].  There is
+ * a mystery "edge offset" value in the top two bits of href.
+ */
+	ret =  wr_Sensor_Reg(REG_HSTART, (hstart >> 3) & 0xff);
+	ret += wr_Sensor_Reg(REG_HSTOP, (hstop >> 3) & 0xff);
+	ret += rd_Sensor_Reg(REG_HREF, &v);
+	v = (v & 0xc0) | ((hstop & 0x7) << 3) | (hstart & 0x7);
+	HAL_Delay(10);
+	ret += wr_Sensor_Reg(REG_HREF, v);
+/*
+ * Vertical: similar arrangement, but only 10 bits.
+ */
+	ret += wr_Sensor_Reg(REG_VSTART, (vstart >> 2) & 0xff);
+	ret += wr_Sensor_Reg(REG_VSTOP, (vstop >> 2) & 0xff);
+	ret += rd_Sensor_Reg(REG_VREF, &v);
+	v = (v & 0xf0) | ((vstop & 0x3) << 2) | (vstart & 0x3);
+	HAL_Delay(10);
+	ret += wr_Sensor_Reg(REG_VREF, v);
+	return ret;
 }

@@ -48,7 +48,9 @@
 #include "sensor.h"
 #include "oled.h"
 #include "delay.h"
+#include "serial.h"
 #include <string.h>
+#include <assert.h>
 
 #include "color_bar_test.h"
 /* USER CODE END Includes */
@@ -73,7 +75,6 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-//extern unsigned int Vsync;
 unsigned int Vsync=0;
 unsigned int a, b, c_data;
 char str[]="0x0000";
@@ -85,31 +86,87 @@ int i;
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
 
-void OV7670_SendOneFrame(void)
+void OV7670_SendOneFrame(unsigned int output_h, unsigned int output_w)
 {
-  for(a=0; a<240; a++)  // 240 rows
+  for(a=0; a<output_h; a++)            // rows
   {
-    for(b=0; b<320; b++)  // 320 columns
+    for(b=0; b<output_w; b++)          // columns
     {
       FIFO_RCK_L();
       asm("NOP");asm("NOP");
-      c_data=GPIOB->IDR&0xff00;  // read high-8 bits of 1 byte
+      c_data=GPIOB->IDR&0xff00;        // read high-8 bits of 1 byte
       FIFO_RCK_H();
       asm("NOP");asm("NOP");
       FIFO_RCK_L();
       asm("NOP");asm("NOP");
       c_data|=(GPIOB->IDR>>8)&0x00ff;  // read low-8 bits of 1 byte
       FIFO_RCK_H();
-      // LCD_WriteRAM(c_data);  // write RGB565 data to TFT GRAM
+      // LCD_WriteRAM(c_data);         // write RGB565 data to TFT GRAM
       i = sprintf(str, "%x", c_data);
-      HAL_UART_Transmit(&huart1, (uint8_t *)str, strlen(str), 10);
-      HAL_UART_Transmit(&huart1, (uint8_t *)",", strlen(","), 10);
+      Debug_Print(&huart1, str);
+      Debug_Print(&huart1, ",");
     }
     HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
   }
 }
 
-void OV7670_SendOneFrame_Gray(void)  // need to check!
+void OV7670_SendOneFrame_Zip(unsigned int output_h, unsigned int output_w)
+{
+  unsigned int row, col, i;
+  uint16_t tmp;
+  uint16_t sum28[28][3];
+  uint16_t r_data = 0;
+  uint16_t g_data = 0;
+  uint16_t b_data = 0;
+  assert(0==output_h%8);
+  assert(0==output_w%8);
+  for(row=0; row<output_h; row++)      // rows
+  {
+	for(col=0; col<output_w; col++)    // columns
+    {
+      FIFO_RCK_L();
+      asm("NOP");asm("NOP");
+      c_data=GPIOB->IDR&0xff00;        // read high-8 bits of 1 byte
+      FIFO_RCK_H();
+      asm("NOP");asm("NOP");
+      FIFO_RCK_L();
+      asm("NOP");asm("NOP");
+      c_data|=(GPIOB->IDR>>8)&0x00ff;  // read low-8 bits of 1 byte
+      r_data = c_data>>11;
+      g_data = (c_data>>5)&0x3F;
+      b_data = c_data&0x1F;
+      FIFO_RCK_H();
+      // LCD_WriteRAM(c_data);         // write RGB565 data to TFT GRAM
+
+      sum28[col/8][0] += r_data;
+      sum28[col/8][1] += g_data;
+      sum28[col/8][2] += b_data;
+    }
+
+    HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
+
+    if(0==(row+1)%8)
+    {
+		for(i=0;i<28;i++)
+		{
+			tmp = ((sum28[i][0]>>6)<<11)|((sum28[i][1]>>6)<<5)|(sum28[i][2]>>6);
+			sprintf(str, "%x", tmp);
+//			sprintf(str, "%x", i);
+			Debug_Print(&huart1, str);
+			Debug_Print(&huart1, ",");
+		}
+
+		for(i=0;i<28;i++)
+		{
+			sum28[i][0] = 0;
+			sum28[i][1] = 0;
+			sum28[i][2] = 0;
+		}
+    }
+  }
+}
+
+void OV7670_SendOneFrame_Gray(void)   // need to check!
 {
   for(a=0; a<240; a++)  // 240 rows
   {
@@ -118,13 +175,13 @@ void OV7670_SendOneFrame_Gray(void)  // need to check!
       FIFO_RCK_L();
       asm("NOP");asm("NOP");
 //      c_data=(GPIOB->IDR>>8)&0xff;  // read high-4 bits of 2 bytes GPIO bits
-      c_data=(GPIOB->IDR>>12)&0x0f;  // read high-4 bits of 2 bytes GPIO bits
+      c_data=(GPIOB->IDR>>12)&0x0f;   // read high-4 bits of 2 bytes GPIO bits
       FIFO_RCK_H();
       asm("NOP");asm("NOP");
-      // LCD_WriteRAM(c_data);  // write RGB565 data to TFT GRAM
+      // LCD_WriteRAM(c_data);        // write RGB565 data to TFT GRAM
       i = sprintf(str_gray, "%x", c_data);
-      HAL_UART_Transmit(&huart1, (uint8_t *)str_gray, strlen(str_gray), 10);
-      HAL_UART_Transmit(&huart1, (uint8_t *)",", strlen(","), 10);
+      Debug_Print(&huart1, str_gray);
+      Debug_Print(&huart1, ",");
     }
     HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
   }
@@ -143,7 +200,9 @@ void OV7670_SendOneFrame_Gray(void)  // need to check!
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-  unsigned int mode = MONO_MODE;
+  unsigned int mode = COLOR_MODE;
+  unsigned int output_w = 224;
+  unsigned int output_h = 224;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -169,16 +228,24 @@ int main(void)
   OLED_Init();
   OLED_Clear();
 
-  HAL_UART_Transmit(&huart1, (uint8_t *)"Init ", strlen("Init "), 10);
-  HAL_UART_Transmit(&huart1, (uint8_t *)"ov7670...\n", strlen("ov7670...\n"), 10);
+  Debug_Print_ln(&huart1, "Init ov7670...");
 
   FIFO_OE_L();
   FIFO_WEN_H();
 
-  while(1!=Sensor_init(mode)){}  // Init CMOS Sensor
-  HAL_UART_Transmit(&huart1, (uint8_t *)"Init ", strlen("Init "), 10);
-  HAL_UART_Transmit(&huart1, (uint8_t *)"ov7670 OK!\n", strlen("ov7670 OK!\n"), 10);
-  Vsync=0;
+  if(0==Sensor_init(mode))  // Init CMOS Sensor
+  {
+	Debug_Print_ln(&huart1, "Init out");
+	return 0;
+  }
+  if(0==OV7670_config_window(10, 184, output_h, output_w))
+  {
+    Debug_Print_ln(&huart1, "conf out");
+    return 0;
+  }
+//  ov7670_set_hw(0,240,0,240);
+  Debug_Print_ln(&huart1, "Init ov7670 success!");
+  Vsync = 0;
   ////////////////////////////////////////
   FIFO_RRST_L();
   FIFO_RCK_L();
@@ -188,9 +255,9 @@ int main(void)
   FIFO_RCK_H();
   Delay_Us(50);
   ////////////////////////////////////////
-//  DispStr_GB2312(20,0,"¹þ¹þ");
+//  DispStr_GB2312(20,0,"ÄãºÃ");
 //  OLED_DispStr(0,0, (uint8_t*)"Size 8X6 Test", FONT_8X6);
-//  OLED_DispStr(0,6, (uint8_t*)"Size 16X8 Test", FONT_16X8);
+  OLED_DispStr(0,0, (uint8_t *)"Sample Display", FONT_16X8);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -204,10 +271,10 @@ int main(void)
       HAL_Delay(10);
       if(HAL_GPIO_ReadPin(GPIOE, KEY1_Pin))  // 1
       {
-	#ifdef DEBUG
+      #ifdef DEBUG
 	  OV7670_SendOneFrame_ColorBar();
-	  HAL_UART_Transmit(&huart1, (uint8_t *)"\r", strlen("\r"), 10);
-	#else
+	  Debug_Print(&huart1, "\r");
+      #else
 	  if(Vsync==2)
 	  {
 	    FIFO_RRST_L();
@@ -217,17 +284,20 @@ int main(void)
 	    FIFO_RRST_H();
 	    FIFO_RCK_H();
 	    if(mode)
-	      {OV7670_SendOneFrame();}
+	      {
+//	    	OV7670_SendOneFrame(output_h, output_w);
+	    	OV7670_SendOneFrame_Zip(output_h, output_w);
+	      }
 	    else
 	      {OV7670_SendOneFrame_Gray();}
-	    HAL_UART_Transmit(&huart1, (uint8_t *)"\r", strlen("\r"), 10);
-	    OLED_DispStr(0,0, (uint8_t*)"Finished!", FONT_16X8);
-	    Vsync=0;
+	    Debug_Print(&huart1, "\r");
+	    Vsync = 0;
 	  }
-	#endif
+	  #endif
       }
     }
   }
+  return 1;
   /* USER CODE END 3 */
 }
 
@@ -285,7 +355,6 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
       Vsync=2;
       HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
     }
-
   }
   /*KEY1 EXTI line: 5*/
   if(__HAL_GPIO_EXTI_GET_FLAG(KEY4_EXTI_Pin))
