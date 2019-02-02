@@ -3,11 +3,14 @@
 #ifndef __serial_H
 #define __serial_H
 
-void Debug_Print(UART_HandleTypeDef *huart, char _out[]);
-void Debug_Print_ln(UART_HandleTypeDef *huart, char _out[]);
+#include "usart.h"
 
-void Uart_Send_Demo_Strings();
-void Uart_Receive_Demo_Strings();
-void Uart_Send_Demo_ASCII_Art();
+void Debug_Print_String(UART_HandleTypeDef *huart, char _out[]);
+void Debug_Print_String_ln(UART_HandleTypeDef *huart, char _out[]);
+void Debug_Print_Integer_ln(UART_HandleTypeDef *huart, int _out);
+
+void Uart_Send_Demo_Strings(UART_HandleTypeDef *huart);
+void Uart_Receive_Demo_Strings(UART_HandleTypeDef *huart);
+void Uart_Send_Demo_ASCII_Art(UART_HandleTypeDef *huart);
 
 #endif /*__serial_H */

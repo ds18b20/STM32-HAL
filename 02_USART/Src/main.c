@@ -110,8 +110,8 @@ int main(void)
   MX_GPIO_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-  Uart_Send_Demo_Strings();
-  Uart_Send_Demo_ASCII_Art();
+  Uart_Send_Demo_Strings(&huart1);
+  Uart_Send_Demo_ASCII_Art(&huart1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -130,7 +130,7 @@ int main(void)
         // only <=12 bytes can be received from PC side, Don't know WHY!!!
         // ==>Because Timeout is set to 10 Ms
         // 9600 bits/s * 0.01 s = 96 bits = 12 Bytes
-        Debug_Print_ln(&huart1, "01234567890123456789");
+        Debug_Print_String_ln(&huart1, "01234567890123456789");
       }
     }
   }
