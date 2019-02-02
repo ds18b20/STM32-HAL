@@ -115,13 +115,13 @@ unsigned char Sensor_init(unsigned char color_mode)
   temp=0x80;
   if(0==wr_Sensor_Reg(0x12, temp)) //Reset SCCB
   {
-	  Debug_Print_ln(&huart1, "wr_Sensor_Reg error");
+	  Debug_Print_String_ln(&huart1, "wr_Sensor_Reg error");
 	  return 0 ;  // return 0 if error
   }
   Delay_Us(10);
   if(0==rd_Sensor_Reg(0x0b, &temp))  // read ID
   {
-	  Debug_Print_ln(&huart1, "read temp error");
+	  Debug_Print_String_ln(&huart1, "read temp error");
 	  return 0 ;  // return 0 if error
   }
 
@@ -133,7 +133,7 @@ unsigned char Sensor_init(unsigned char color_mode)
       {
 		if(0==wr_Sensor_Reg(OV7670_reg[i][0], OV7670_reg[i][1]))
 		{
-			Debug_Print_ln(&huart1, "write color params error");
+			Debug_Print_String_ln(&huart1, "write color params error");
 			return 0;  // return 0 if error
 		}
       }

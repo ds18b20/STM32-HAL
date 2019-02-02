@@ -103,8 +103,8 @@ void OV7670_SendOneFrame(unsigned int output_h, unsigned int output_w)
       FIFO_RCK_H();
       // LCD_WriteRAM(c_data);         // write RGB565 data to TFT GRAM
       i = sprintf(str, "%x", c_data);
-      Debug_Print(&huart1, str);
-      Debug_Print(&huart1, ",");
+      Debug_Print_String(&huart1, str);
+      Debug_Print_String(&huart1, ",");
     }
     HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
   }
@@ -152,8 +152,8 @@ void OV7670_SendOneFrame_Zip(unsigned int output_h, unsigned int output_w)
 			tmp = ((sum28[i][0]>>6)<<11)|((sum28[i][1]>>6)<<5)|(sum28[i][2]>>6);
 			sprintf(str, "%x", tmp);
 //			sprintf(str, "%x", i);
-			Debug_Print(&huart1, str);
-			Debug_Print(&huart1, ",");
+			Debug_Print_String(&huart1, str);
+			Debug_Print_String(&huart1, ",");
 		}
 
 		for(i=0;i<28;i++)
@@ -180,8 +180,8 @@ void OV7670_SendOneFrame_Gray(void)   // need to check!
       asm("NOP");asm("NOP");
       // LCD_WriteRAM(c_data);        // write RGB565 data to TFT GRAM
       i = sprintf(str_gray, "%x", c_data);
-      Debug_Print(&huart1, str_gray);
-      Debug_Print(&huart1, ",");
+      Debug_Print_String(&huart1, str_gray);
+      Debug_Print_String(&huart1, ",");
     }
     HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
   }
@@ -228,23 +228,23 @@ int main(void)
   OLED_Init();
   OLED_Clear();
 
-  Debug_Print_ln(&huart1, "Init ov7670...");
+  Debug_Print_String_ln(&huart1, "Init ov7670...");
 
   FIFO_OE_L();
   FIFO_WEN_H();
 
   if(0==Sensor_init(mode))  // Init CMOS Sensor
   {
-	Debug_Print_ln(&huart1, "Init out");
+	Debug_Print_String_ln(&huart1, "Init out");
 	return 0;
   }
   if(0==OV7670_config_window(10, 184, output_h, output_w))
   {
-    Debug_Print_ln(&huart1, "conf out");
+    Debug_Print_String_ln(&huart1, "conf out");
     return 0;
   }
 //  ov7670_set_hw(0,240,0,240);
-  Debug_Print_ln(&huart1, "Init ov7670 success!");
+  Debug_Print_String_ln(&huart1, "Init ov7670 success!");
   Vsync = 0;
   ////////////////////////////////////////
   FIFO_RRST_L();
@@ -273,7 +273,7 @@ int main(void)
       {
       #ifdef DEBUG
 	  OV7670_SendOneFrame_ColorBar();
-	  Debug_Print(&huart1, "\r");
+	  Debug_Print_String(&huart1, "\r");
       #else
 	  if(Vsync==2)
 	  {
@@ -290,7 +290,7 @@ int main(void)
 	      }
 	    else
 	      {OV7670_SendOneFrame_Gray();}
-	    Debug_Print(&huart1, "\r");
+	    Debug_Print_String(&huart1, "\r");
 	    Vsync = 0;
 	  }
 	  #endif
